@@ -34,7 +34,7 @@ if __name__ == '__main__':
     acc_file, gyro_file = data.get_raw_data_files(exp, user)
 
     acc_data = data.get_data(acc_file, start, stop)
-    gyro_data = data.get_data(gyro_file, start, stop)
+    # gyro_data = data.get_data(gyro_file, start, stop)
 
     plt.figure(facecolor="white", figsize=(15,7))
 
