@@ -27,7 +27,7 @@ def preprocess(preprocessf, data):
     return np.apply_along_axis(preprocessf, 0, data)
 
 if __name__ == '__main__':
-    labels = data.get_labels()
+    labels = data.get_windows_per_label()
 
     exp, user, start, stop = labels[1][0]
 
