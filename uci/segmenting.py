@@ -8,7 +8,7 @@ def get_segment_labels(labels_per_file):
 
     for file_ids, windows_with_labels in labels_per_file.iteritems():
         for window, label in windows_with_labels:
-            num_segments = ((window[1] - window[0]) // 64) - 1
+            num_segments = ((window[1] + 1 - window[0]) // 64) - 1
 
             start = window[0]
             for i in range(num_segments):
