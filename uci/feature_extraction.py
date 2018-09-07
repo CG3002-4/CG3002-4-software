@@ -9,9 +9,11 @@ def extract_features_over_axes(segment, feature_func):
         ]
     )
 
+FFT_NUM_AMPS = 3
+
 def freq_amps(segment):
     def freq_amps(axis):
-        return np.abs(np.fft.rfft(axis))[:3]
+        return np.abs(np.fft.rfft(axis))[:FFT_NUM_AMPS]
     return extract_features_over_axes(segment, freq_amps)
 
 def extract_features(segment, *feature_funcs):

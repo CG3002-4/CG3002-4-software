@@ -2,6 +2,9 @@ import numpy as np
 import data
 from collections import defaultdict
 
+SEGMENT_SIZE = 128
+OVERLAP_SIZE = SEGMENT_SIZE // 2
+
 def get_segment_labels(labels_per_file):
     """
     For every file, get a list of segments with labels
@@ -19,12 +22,12 @@ def get_segment_labels(labels_per_file):
 
     for file_ids, windows_with_labels in labels_per_file.iteritems():
         for window, label in windows_with_labels:
-            num_segments = ((window[1] + 1 - window[0]) // 64) - 1
+            num_segments = ((window[1] + 1 - window[0]) // OVERLAP_SIZE) - 1
 
             start = window[0]
             for i in range(num_segments):
-                segment_labels[file_ids].append(((start, start + 128), label))
-                start += 64
+                segment_labels[file_ids].append(((start, start + SEGMENT_SIZE), label))
+                start += OVERLAP_SIZE
 
     return segment_labels
 
