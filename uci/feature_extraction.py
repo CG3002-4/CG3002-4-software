@@ -16,14 +16,14 @@ def freq_amps(segment):
         return np.abs(np.fft.rfft(axis))[:FFT_NUM_AMPS]
     return extract_features_over_axes(segment, freq_amps)
 
-def extract_features(segment, *feature_funcs):
-    feature_lists = [feature_func(segment) for feature_func in feature_funcs]
-    return np.concatenate(feature_lists)
+def extract_features(segments, feature_funcs):
+    def extract_features(segment):
+        feature_lists = [feature_func(segment) for feature_func in feature_funcs]
+        return np.concatenate(feature_lists)
+    return np.array([extract_features(segment) for segment in segments])
 
 if __name__ == '__main__':
     labels_per_file = data.get_labels_per_file()
     sample_labels_per_file = {(1, 1): [labels_per_file[1, 1][0]]}
 
     sample_segment = segmenting.get_raw_segments(sample_labels_per_file)[0][0]
-
-    print extract_features(sample_segment, freq_amps)
