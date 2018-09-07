@@ -59,7 +59,7 @@ def get_raw_segments(labels_per_file):
                 "gyro": gyro_seg
             }, label))
 
-    return raw_segments
+    return np.array(raw_segments)
 
 if __name__ == '__main__':
     print len(get_raw_segments(data.get_labels_per_file()))

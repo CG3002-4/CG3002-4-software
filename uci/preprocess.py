@@ -46,7 +46,8 @@ if __name__ == '__main__':
     plt.subplot(222)
     plot.plot_freq_spec(original, 'Acc')
 
-    preprocessed = preprocess(compose(standardize, hann, medfilt), acc_data)
+    # Standardize using global means
+    preprocessed = preprocess(compose(hann, medfilt), acc_data)
     plt.subplot(223)
     plot.plot_data(preprocessed, 'Acc_pre')
 
