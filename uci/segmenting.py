@@ -3,7 +3,18 @@ import data
 from collections import defaultdict
 
 def get_segment_labels(labels_per_file):
-    """For every file, get a list of segments with labels"""
+    """
+    For every file, get a list of segments with labels
+
+    Returns:
+        {
+            (experiment_id, user_id):
+                [((segment_start, segment_stop_exc), segment_label),
+                 ...
+                ],
+            ...
+        }
+    """
     segment_labels = defaultdict(list)
 
     for file_ids, windows_with_labels in labels_per_file.iteritems():
@@ -21,6 +32,15 @@ def get_raw_segments(labels_per_file):
     """
     Get a list of all the segments given a mapping from files to
     segment_labels.
+
+    Returns:
+        [
+            {
+                "acc": [[x, y, z], ...]
+                "gyro": [[x, y, z], ...]
+            },
+            ...
+        ]
     """
     segment_labels = get_segment_labels(labels_per_file)
 
@@ -42,4 +62,4 @@ def get_raw_segments(labels_per_file):
     return raw_segments
 
 if __name__ == '__main__':
-    print np.shape(get_raw_segments(data.get_labels_per_file())[0][0]["acc"])
+    print len(get_raw_segments(data.get_labels_per_file()))

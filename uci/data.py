@@ -2,7 +2,18 @@ import numpy as np
 from collections import defaultdict
 
 def get_labels_per_file():
-    """For every file, get a list of windows with labels"""
+    """
+    For every file, get a list of windows with labels
+
+    Returns:
+        {
+            (experiment_id, user_id):
+                [((label_start, label_stop_inc), label),
+                 ...
+                ],
+            ...
+        }
+    """
     labels_file = open('dataset/RawData/labels.txt')
 
     labels = defaultdict(list)
@@ -17,6 +28,15 @@ def get_windows_per_label():
     """
     For every label, get a list of values detailing info about each occurence
     in dataset.
+
+    Returns:
+        {
+            label:
+                [(experiment_id, user_id, label_start, label_stop_inc)
+                 ...
+                ],
+            ...
+        }
     """
     labels_file = open('dataset/RawData/labels.txt')
 
@@ -35,7 +55,12 @@ def get_windows_per_label():
     #     print np.mean(window_sizes), np.std(window_sizes)
 
 def get_data(filename):
-    """Read in raw data into a numpy array"""
+    """
+    Read in raw data into a numpy array
+
+    Returns:
+        [[x, y, z], ...]
+    """
     data = open(filename)
     return np.array(map(lambda line: map(float, line.split(' ')), data))
 
