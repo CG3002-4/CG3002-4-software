@@ -1,5 +1,6 @@
 import numpy as np
 import data
+import pickle
 from collections import defaultdict
 
 SEGMENT_SIZE = 128
@@ -63,6 +64,14 @@ def get_raw_segments(labels_per_file):
             }, label))
 
     return np.array(raw_segments)
+
+def save_segments(segments, filename):
+    with open(filename, 'wb') as output_file:
+        pickle.dump(segments, output_file)
+
+def load_segments(filename):
+    with open(filename, 'rb') as input_file:
+        return pickle.load(input_file)
 
 if __name__ == '__main__':
     print len(get_raw_segments(data.get_labels_per_file()))
