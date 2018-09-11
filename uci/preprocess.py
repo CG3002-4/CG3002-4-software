@@ -1,10 +1,8 @@
 import numpy as np
-import matplotlib.pyplot as plt
-import plot
 import data
+import compose
 from scipy import signal
 from sklearn import preprocessing
-from compose import compose
 
 def medfilt(axis):
     return signal.medfilt(signal.medfilt(axis, 5), 3)
@@ -23,10 +21,13 @@ def butter(axis):
     b, a = signal.butter(3, cutoff, btype='high', output='ba')
     return signal.lfilter(b, a, axis)
 
-def preprocess(preprocessf, data):
-    return np.apply_along_axis(preprocessf, 0, data)
+def preprocess(preprocessfs, data):
+    return np.apply_along_axis(compose.compose(preprocessfs), 0, data)
 
 if __name__ == '__main__':
+    import matplotlib.pyplot as plt
+    import plot
+
     labels = data.get_windows_per_label()
 
     exp, user, start, stop = labels[1][0]
@@ -38,7 +39,7 @@ if __name__ == '__main__':
 
     plt.figure(facecolor="white", figsize=(15,7))
 
-    original = preprocess(compose(), acc_data)
+    original = preprocess([], acc_data)
 
     plt.subplot(221)
     plot.plot_data(original, 'Acc')
@@ -47,7 +48,7 @@ if __name__ == '__main__':
     plot.plot_freq_spec(original, 'Acc')
 
     # Standardize using global means
-    preprocessed = preprocess(compose(hann, medfilt), acc_data)
+    preprocessed = preprocess([hann, medfilt], acc_data)
     plt.subplot(223)
     plot.plot_data(preprocessed, 'Acc_pre')
 
