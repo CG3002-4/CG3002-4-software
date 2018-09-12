@@ -7,11 +7,13 @@ import numpy as np
 
 PREPROCESS_FUNCS = [preprocess.hann, preprocess.medfilt]
 
-FEATURES = [feature_extraction.energy,
-            feature_extraction.entropy,
-            feature_extraction.mean,
-            feature_extraction.stdev
-            ]
+FEATURES = [
+    feature_extraction.energy,
+    feature_extraction.entropy,
+    feature_extraction.mean,
+    feature_extraction.stdev
+]
+
 
 def preprocess_segment(segment):
     segment['acc'] = preprocess.preprocess(PREPROCESS_FUNCS, segment['acc'])
