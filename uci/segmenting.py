@@ -6,11 +6,16 @@ from collections import defaultdict
 SEGMENT_SIZE = 128
 OVERLAP_SIZE = SEGMENT_SIZE // 2
 
-def get_segment_labels(labels_per_file):
-    """
-    For every file, get a list of segments with labels
 
-    Returns:
+def get_segments(labelled_activities):
+    """
+    Returns a list of segments with labels from given 
+    formatted dictionary of labelled activities.
+
+    Each labelled activity is divided into overlapping segments
+
+
+    Format:
         {
             (experiment_id, user_id):
                 [((segment_start, segment_stop_exc), segment_label),
@@ -19,25 +24,29 @@ def get_segment_labels(labels_per_file):
             ...
         }
     """
-    segment_labels = defaultdict(list)
+    labelled_segments = defaultdict(list)
 
-    for file_ids, windows_with_labels in labels_per_file.iteritems():
-        for window, label in windows_with_labels:
-            num_segments = ((window[1] + 1 - window[0]) // OVERLAP_SIZE) - 1
-
+    for file_ids, labelled_windows in labelled_activities.items():
+        for window, label in labelled_windows:
             start = window[0]
+            end = window[1]
+            # -1 is for the overrun segment
+            num_segments = ((end + 1 - start) // OVERLAP_SIZE) - 1
+
             for i in range(num_segments):
-                segment_labels[file_ids].append(((start, start + SEGMENT_SIZE), label))
+                labelled_segments[file_ids].append(
+                    ((start, start + SEGMENT_SIZE), label))
                 start += OVERLAP_SIZE
 
-    return segment_labels
+    return labelled_segments
 
-def get_raw_segments(labels_per_file):
+
+def segment_activities(labelled_activities):
     """
-    Get a list of all the segments given a mapping from files to
-    segment_labels.
+    Returns a numpy array of segmented data from given 
+    formatted dictionary of labelled activities. 
 
-    Returns:
+    Format:
         [
             {
                 "acc": [[x, y, z], ...]
@@ -46,32 +55,41 @@ def get_raw_segments(labels_per_file):
             ...
         ]
     """
-    segment_labels = get_segment_labels(labels_per_file)
+    labelled_segments = get_segments(labelled_activities)
 
-    raw_segments = []
+    segmented_data = []
 
-    for file_ids, segments in segment_labels.iteritems():
-        acc_file, gyro_file = data.get_raw_data_files(file_ids[0], file_ids[1])
-        acc_values, gyro_values = data.get_data(acc_file), data.get_data(gyro_file)
+    for file_ids, segments in labelled_segments.items():
+        expr_id = file_ids[0]
+        user_id = file_ids[1]
+
+        acc_file, gyro_file = data.get_raw_acc_gyro(expr_id, user_id)
+        acc_values = data.format_raw_data(acc_file)
+        gyro_values = data.format_raw_data(gyro_file)
 
         for segment, label in segments:
-            acc_seg = acc_values[segment[0] : segment[1]]
-            gyro_seg = gyro_values[segment[0] : segment[1]]
+            acc_seg = acc_values[segment[0]: segment[1]]
+            gyro_seg = gyro_values[segment[0]: segment[1]]
 
-            raw_segments.append(({
-                "acc": acc_seg,
-                "gyro": gyro_seg
-            }, label))
+            segmented_data.append((
+                {
+                    "acc": acc_seg,
+                    "gyro": gyro_seg
+                },
+                label))
 
-    return np.array(raw_segments)
+    return np.array(segmented_data)
+
 
 def save_segments(segments, filename):
     with open(filename, 'wb') as output_file:
         pickle.dump(segments, output_file)
 
+
 def load_segments(filename):
     with open(filename, 'rb') as input_file:
         return pickle.load(input_file)
 
+
 if __name__ == '__main__':
-    print len(get_raw_segments(data.get_labels_per_file()))
+    print(len(segment_activities(data.get_labels())))
