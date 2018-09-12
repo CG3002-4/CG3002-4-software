@@ -9,7 +9,7 @@ OVERLAP_SIZE = SEGMENT_SIZE // 2
 
 def get_segments(labelled_activities):
     """
-    Returns a list of segments with labels from given 
+    Returns a list of segments with labels from given
     formatted dictionary of labelled activities.
 
     Each labelled activity is divided into overlapping segments
@@ -43,8 +43,8 @@ def get_segments(labelled_activities):
 
 def segment_activities(labelled_activities):
     """
-    Returns a numpy array of segmented data from given 
-    formatted dictionary of labelled activities. 
+    Returns a numpy array of segmented data from given
+    formatted dictionary of labelled activities.
 
     Format:
         [
