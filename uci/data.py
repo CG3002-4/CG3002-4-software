@@ -4,7 +4,7 @@ from collections import defaultdict
 
 def get_labels():
     """
-    For specified file, return a formatted dict of labelled activities with 
+    For specified file, return a formatted dict of labelled activities with
     the experiment and user id, along with label start and stop.
 
     Format:
@@ -67,7 +67,7 @@ def format_raw_data(file_location):
     """
     with open(file_location) as data:
         # For every line in data, parse data as floats into np array
-        return np.array(list(map(lambda line: map(float, line.split(' ')), data)))
+        return np.array(list(map(lambda line: list(map(float, line.split(' '))), data)))
 
 
 def get_raw_acc_gyro(expr_id, user_id):

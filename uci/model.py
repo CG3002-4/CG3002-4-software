@@ -4,6 +4,9 @@ import segmenting
 import preprocess
 import feature_extraction
 import numpy as np
+from sklearn.multiclass import OneVsRestClassifier
+from sklearn.svm import LinearSVC
+from sklearn.metrics import confusion_matrix, accuracy_score, classification_report
 
 PREPROCESS_FUNCS = [preprocess.hann, preprocess.medfilt]
 
@@ -51,19 +54,29 @@ def generate_train_test_segments():
     segmenting.save_segments(segmenting.segment_activities(test_labels), 'test_segments.txt')
 
 
-def load_train_test_segments():
-    return (segmenting.load_segments('train_segments.txt'),
-            segmenting.load_segments('test_segments.txt'))
+def train_model(model):
+    train_segments = segmenting.load_segments('train_segments.txt')
+    train_features = extract_features(train_segments[:, 0])
+    train_labels = list(train_segments[:, 1])
+
+    model.fit(train_features, train_labels)
+
+    return model
+
+
+def test_model(model):
+    test_segments = segmenting.load_segments('test_segments.txt')
+    test_features = extract_features(test_segments[:, 0])
+    test_labels = list(test_segments[:, 1])
+
+    test_predictions = model.predict(test_features)
+
+    print(classification_report(test_labels, test_predictions))
 
 
 if __name__ == '__main__':
     # generate_train_test_segments()
 
-    train_segments, test_segments = load_train_test_segments()
-
-    print(train_segments[0].shape)
-
-    # features = extract_features(segments[:, 0])
-    # labels = segments[:, 1]
-    #
-    # print features.shape
+    model = OneVsRestClassifier(LinearSVC())
+    model = train_model(model)
+    test_model(model)
