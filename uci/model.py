@@ -8,7 +8,11 @@ from sklearn.multiclass import OneVsRestClassifier
 from sklearn.svm import LinearSVC
 from sklearn.metrics import confusion_matrix, accuracy_score, classification_report
 
-PREPROCESS_FUNCS = [preprocess.hann, preprocess.medfilt]
+PREPROCESS_FUNCS = [
+    preprocess.butter,
+    preprocess.hann,
+    preprocess.medfilt
+]
 
 FEATURES = [
     feature_extraction.energy,
@@ -22,7 +26,7 @@ def preprocess_segment(segment):
     segment['acc'] = preprocess.preprocess(PREPROCESS_FUNCS, segment['acc'])
     segment['gyro'] = preprocess.preprocess(PREPROCESS_FUNCS, segment['gyro'])
 
-    return segment
+    return preprocess.standardize_segment(segment)
 
 
 def extract_features(segments):
@@ -50,6 +54,8 @@ def generate_train_test_segments():
     train_users = users[:21]
     train_labels, test_labels = split_dict(labels_per_file, lambda exp_user: exp_user[1] in train_users)
 
+    preprocess.save_stats(PREPROCESS_FUNCS, train_labels)
+
     segmenting.save_segments(segmenting.segment_activities(train_labels), 'train_segments.txt')
     segmenting.save_segments(segmenting.segment_activities(test_labels), 'test_segments.txt')
 
@@ -72,11 +78,39 @@ def test_model(model):
     test_predictions = model.predict(test_features)
 
     print(classification_report(test_labels, test_predictions))
+    print(confusion_matrix(test_labels, test_predictions))
+    print(accuracy_score(test_labels, test_predictions))
 
 
 if __name__ == '__main__':
     # generate_train_test_segments()
 
-    model = OneVsRestClassifier(LinearSVC())
-    model = train_model(model)
-    test_model(model)
+    segment = segmenting.load_segments('train_segments.txt')[0][0]
+
+    import matplotlib.pyplot as plt
+    import plot
+
+    plt.figure(facecolor="white", figsize=(15, 7))
+
+    original = segment['acc']
+
+    plt.subplot(221)
+    plot.plot_data(original, 'Acc')
+
+    plt.subplot(222)
+    plot.plot_freq_spec(original, 'Acc')
+
+    # Standardize using global means
+    preprocessed = preprocess_segment(segment)['acc']
+    plt.subplot(223)
+    plot.plot_data(preprocessed, 'Acc_pre')
+
+    plt.subplot(224)
+    plot.plot_freq_spec(preprocessed, 'Acc_pre')
+
+    # plot_data(gyro_data, 'Gyro')
+    plt.show()
+
+    # model = OneVsRestClassifier(LinearSVC())
+    # model = train_model(model)
+    # test_model(model)

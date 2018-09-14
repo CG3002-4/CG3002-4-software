@@ -14,8 +14,8 @@ def plot_freq_spec(data, title):
     def plot_freq_spec(axis, line, label):
         n = len(axis)
         fft = fftpack.fft(axis) / n
-        fft = fft[range(n / 2)]
-        plt.plot(range(n / 2), abs(fft), line, label=label)
+        fft = fft[range(n // 2)]
+        plt.plot(range(n // 2), abs(fft), line, label=label)
     plot_freq_spec(data[:, 0], 'r-', label='x')
     plot_freq_spec(data[:, 1], 'g-', label='y')
     plot_freq_spec(data[:, 2], 'b-', label='z')

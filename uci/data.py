@@ -47,7 +47,7 @@ def get_windows_per_label():
 
         for line in labels_file:
             line = list(map(int, line.split(' ')))
-            labels[(line[0], line[1])].append(((line[3], line[4]), line[2]))
+            labels[line[2]].append((line[0], line[1], line[3], line[4]))
 
         return {label: np.array(values) for label, values in labels.items()}
 
