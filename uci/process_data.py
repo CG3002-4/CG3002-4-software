@@ -142,7 +142,6 @@ def butter_body(axis):
 def extract_features(measures, window, user_id, move_id):
     """ Applies list of given measures to given window to extract features """
 
-    extracted_features = pd.DataFrame()
     features = pd.DataFrame()
 
     for measure in measures:
@@ -153,9 +152,7 @@ def extract_features(measures, window, user_id, move_id):
     features['Move ID'] = move_id
     features.columns = range(len(features.columns))
 
-    extracted_features = pd.concat([extracted_features, features])
-
-    return extracted_features
+    return features
 
 
 ###################
@@ -191,12 +188,12 @@ if __name__ == '__main__':
 
     # Pre-process each experiment data with medfilt and butter, split acc signals in bodyAcc and gravAcc
     for i in range(len(combined_data)):
-        combined_data[i].iloc[:, :] = combined_data[i].iloc[:, :].apply(  # Filter noise
-            compose([butter_noise, medfilt]))
         combined_data[i].iloc[:, 0:3] = combined_data[i].iloc[:, 0:3].apply(  # bodyAcc
             compose([butter_body, butter_noise, medfilt]))
         combined_data[i].iloc[:, 3:6] = combined_data[i].iloc[:, 3:6].apply(  # gravAcc
             compose([butter_gravity, butter_noise, medfilt]))
+        combined_data[i].iloc[:, 6:9] = combined_data[i].iloc[:, 6:9].apply(  # Gyro
+            compose([butter_noise, medfilt]))
 
     # Extract features from fixed-width sliding windows (128 cycles with 50% overlap)
     # and save into single dataframe

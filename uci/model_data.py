@@ -4,33 +4,36 @@ from sklearn.ensemble import RandomForestClassifier, ExtraTreesClassifier
 from sklearn.metrics import confusion_matrix, accuracy_score
 from sklearn.model_selection import KFold, StratifiedKFold
 
-ESTIMATORS = 39
 
 if __name__ == '__main__':
     # Read in features
     combined_extracted_features = pd.read_csv(
         './extracted_features.csv', sep="\t", encoding='utf-8')
-
     X = combined_extracted_features.iloc[:, :-2]
-    y = combined_extracted_features.iloc[:, -1:]
+    y = combined_extracted_features.iloc[:, -1]
+    
+    # Hyperparameters
     MAX_FEATURES = (np.sqrt(len(X.columns)) + 1) / len(X.columns)
+    ESTIMATORS = 100
 
-#    # k-fold validation
-#    accuracy = []
-#    kf = KFold(n_splits=10, shuffle=True, random_state=0)
-#    kf.get_n_splits(X)
-#
-#    for train_index, test_index in kf.split(X):
-#       train_X, test_X = X.iloc[train_index], X.iloc[test_index]
-#       train_y, test_y = y.iloc[train_index], y.iloc[test_index]
-#
-#       clf = RandomForestClassifier(random_state=0)
-#       clf.fit(train_X, train_y.values.ravel())
-#
-#       predictions = clf.predict(test_X)
-#       accuracy.append(accuracy_score(test_y, predictions))
-#
-#    print(np.mean(accuracy))
+# =============================================================================
+#     # k-fold validation
+#     accuracy = []
+#     kf = KFold(n_splits=10, shuffle=True, random_state=0)
+#     kf.get_n_splits(X)
+# 
+#     for train_index, test_index in kf.split(X):
+#        train_X, test_X = X.iloc[train_index], X.iloc[test_index]
+#        train_y, test_y = y.iloc[train_index], y.iloc[test_index]
+# 
+#        clf = RandomForestClassifier(random_state=0)
+#        clf.fit(train_X, train_y.values.ravel())
+# 
+#        predictions = clf.predict(test_X)
+#        accuracy.append(accuracy_score(test_y, predictions))
+# 
+#     print(np.mean(accuracy))
+# =============================================================================
 
     # Stratified k-fold validation
     accuracy = []
