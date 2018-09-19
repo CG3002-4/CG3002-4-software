@@ -46,6 +46,18 @@ def stdev(segment):
     return extract_features_over_axes(segment, stdev)
 
 
+def correlate(segment):
+    def correlate_sensor(sensor_name, index):
+        return np.corrcoef(segment[sensor_name][:, index], segment[sensor_name][:, index % 3])[0, 1]
+
+    correlations = []
+    for i in range(3):
+        correlations.append(correlate_sensor('acc', i))
+        correlations.append(correlate_sensor('gyro', i))
+
+    return np.array(correlations)
+
+
 def extract_features(segments, feature_funcs):
     def extract_features(segment):
         feature_lists = [feature_func(segment) for feature_func in feature_funcs]

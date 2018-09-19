@@ -80,7 +80,7 @@ def standardize_segment(segment):
     stats = load_stats()
 
     def standardize_sensor(sensor_name, axis):
-        segment[sensor_name][:, axis] = (segment[sensor_name][:, axis] - stats['means'][sensor_name][axis]) / stats['stdevs'][sensor_name][axis]
+        segment[sensor_name][:, axis] = (segment[sensor_name][:, axis] - stats['means'][sensor_name][axis])  # / stats['stdevs'][sensor_name][axis]
 
     for i in range(3):
         standardize_sensor('acc', i)
@@ -99,7 +99,7 @@ if __name__ == '__main__':
 
     acc_file, gyro_file = data.get_raw_acc_gyro(exp, user)
 
-    acc_data = data.format_raw_data(acc_file)[start: stop]
+    acc_data = data.format_raw_data(acc_file)[start: start + 200]
     # gyro_data = data.get_data(gyro_file, start, stop)
 
     plt.figure(facecolor="white", figsize=(15, 7))
@@ -113,7 +113,7 @@ if __name__ == '__main__':
     plot.plot_freq_spec(original, 'Acc')
 
     # Standardize using global means
-    preprocessed = preprocess([butter, hann, medfilt], acc_data)
+    preprocessed = preprocess([butter], acc_data)
     plt.subplot(223)
     plot.plot_data(preprocessed, 'Acc_pre')
 

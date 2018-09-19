@@ -3,13 +3,15 @@ import data
 import segmenting
 import preprocess
 import feature_extraction
+import copy
 import numpy as np
 from sklearn.multiclass import OneVsRestClassifier
 from sklearn.svm import LinearSVC
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import confusion_matrix, accuracy_score, classification_report
 
 PREPROCESS_FUNCS = [
-    preprocess.butter,
+#    preprocess.butter,
     preprocess.hann,
     preprocess.medfilt
 ]
@@ -18,7 +20,8 @@ FEATURES = [
     feature_extraction.energy,
     feature_extraction.entropy,
     feature_extraction.mean,
-    feature_extraction.stdev
+    feature_extraction.stdev,
+    feature_extraction.correlate
 ]
 
 
@@ -62,6 +65,32 @@ def generate_train_test_segments():
 
 def train_model(model):
     train_segments = segmenting.load_segments('train_segments.txt')
+
+    # for segment, label in train_segments:
+    #     import matplotlib.pyplot as plt
+    #     import plot
+    #
+    #     plt.figure(facecolor="white", figsize=(15, 7))
+    #
+    #     original = segment['acc']
+    #
+    #     plt.subplot(221)
+    #     plot.plot_data(original, 'Acc')
+    #
+    #     plt.subplot(222)
+    #     plot.plot_freq_spec(original, 'Acc')
+    #
+    #     # Standardize using global means
+    #     preprocessed = preprocess_segment(segment)['acc']
+    #     plt.subplot(223)
+    #     plot.plot_data(preprocessed, 'Acc_pre')
+    #
+    #     plt.subplot(224)
+    #     plot.plot_freq_spec(preprocessed, 'Acc_pre')
+    #
+    #     # plot_data(gyro_data, 'Gyro')
+    #     plt.show()
+
     train_features = extract_features(train_segments[:, 0])
     train_labels = list(train_segments[:, 1])
 
@@ -85,32 +114,7 @@ def test_model(model):
 if __name__ == '__main__':
     # generate_train_test_segments()
 
-    segment = segmenting.load_segments('train_segments.txt')[0][0]
-
-    import matplotlib.pyplot as plt
-    import plot
-
-    plt.figure(facecolor="white", figsize=(15, 7))
-
-    original = segment['acc']
-
-    plt.subplot(221)
-    plot.plot_data(original, 'Acc')
-
-    plt.subplot(222)
-    plot.plot_freq_spec(original, 'Acc')
-
-    # Standardize using global means
-    preprocessed = preprocess_segment(segment)['acc']
-    plt.subplot(223)
-    plot.plot_data(preprocessed, 'Acc_pre')
-
-    plt.subplot(224)
-    plot.plot_freq_spec(preprocessed, 'Acc_pre')
-
-    # plot_data(gyro_data, 'Gyro')
-    plt.show()
-
     # model = OneVsRestClassifier(LinearSVC())
-    # model = train_model(model)
-    # test_model(model)
+    model = RandomForestClassifier()
+    model = train_model(model)
+    test_model(model)
