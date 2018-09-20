@@ -75,8 +75,8 @@ def combine_raw_data(acc_filenames, acc_file_location_prefix, gyro_filenames, gy
 
 
 def get_move_info(num_experiments):
-    """ 
-    Return list of dataframes, where each dataframe is the feature info for an experiment 
+    """
+    Return list of dataframes, where each dataframe is the feature info for an experiment
 
     Feature info refers to expr/user/move IDs, Label start and end
     """
@@ -191,7 +191,7 @@ if __name__ == '__main__':
 
     # Pre-process each experiment data with medfilt and butter, split acc signals in bodyAcc and gravAcc
     for i in range(len(combined_data)):
-        combined_data[i].iloc[:, :] = combined_data[i].iloc[:, :].apply(  # Filter noise
+        combined_data[i].iloc[:, 6:9] = combined_data[i].iloc[:, 6:9].apply(  # Filter noise
             compose([butter_noise, medfilt]))
         combined_data[i].iloc[:, 0:3] = combined_data[i].iloc[:, 0:3].apply(  # bodyAcc
             compose([butter_body, butter_noise, medfilt]))
